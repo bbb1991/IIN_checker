@@ -39,7 +39,7 @@ public class Example1 {
                 hw.checkBirth(hw.iin);
                 System.out.println("Correct IIN!");
                 System.out.println("Date of birth: " + hw.day + "." + hw.month + "." + hw.year);
-                System.out.println("Gender: " + (hw.sex ? "Woman" : "Man"));
+                System.out.println("Gender: " + (hw.sex ? "Woman" : "Men"));
 
             } else {
                 System.out.println("Umm... Seems like it's not correct IIN, but maybe operators made mistake");
