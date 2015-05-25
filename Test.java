@@ -31,7 +31,7 @@ public class Example1 {
 
             // Checking length
             if (hw.iin.length() != 12) {
-                throw new IllegalArgumentException("Incorrect IIN length!");
+                throw new IncorrectDataException("Incorrect IIN length!");
             }
 
             // checking sums
