@@ -82,15 +82,15 @@ public class Example1 {
                 sex = false;
                 break;
             case "4":
-                year = 1900;
+                year += 1900;
                 sex = true;
                 break;
             case "5":
-                year = 2000;
+                year += 2000;
                 sex = false;
                 break;
             case "6":
-                year = 2000;
+                year += 2000;
                 sex = true;
                 break;
             default:
