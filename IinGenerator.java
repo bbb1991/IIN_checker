@@ -13,15 +13,19 @@ public class IinGenerator {
     // And I think StringBuffer is much better idea than String or long
     private StringBuffer sb = new StringBuffer(12);
 
+    // About month age I found this awesome class. Don't know how I lived without it before
+    Random r = new Random();
+
     public static void main(String[] args) {
 
         IinGenerator generator = new IinGenerator();
 
-        for (int i = 0; i < 100; i++) {
-            generator.generateDate();
-            System.out.println(generator.sb);
-            generator.sb.delete(0, generator.sb.length());
-        }
+        generator.generateDate();
+        generator.generateSerialNumber();
+        generator.calculateControlNumber();
+        System.out.println(generator.sb);
+
+
     }
 
     // First step: IIN must have date of birth:
@@ -30,9 +34,8 @@ public class IinGenerator {
     // IIN
     private void generateDate() {
 
-        // About month age I found this awesome class. Don't know how I lived without it before
-        Random r = new Random();
-        int year, month, day;
+
+        int year, month, day, century_gender;
 
         // Generate year. Must be between 00 (like 2000 or 1900 or even 1800 why not?!)
         // and 99 (1999, 1899 ...)
@@ -46,7 +49,7 @@ public class IinGenerator {
             }
         }
 
-        // Ok. Now we need day. But... We have 31 day of month, 30 also 28 and... 29
+        // Ok. Now we need day. But... We have 31 day of month, 30 also 28 and... oh dear, 29
         boolean isDayCorrect = false;
         do {
             day = r.nextInt(32);
@@ -58,10 +61,8 @@ public class IinGenerator {
                 case 8:
                 case 10:
                 case 12:
-                    if (day > 0)
-                    {
+                    if (day > 0) {
                         isDayCorrect = true;
-
                     }
                     break;
                 // TODO fix february month. Let me sleep on it
@@ -77,13 +78,27 @@ public class IinGenerator {
             }
         } while (!isDayCorrect);
 
+        // Generating gender and century.
+        // if RANDOM % 2 == 0 this is woman/girl/grandma/..
+        // if RANDOM % 2 != 0 this is boy/men/granpa/..
+        // 1, 2 - 1800
+        // 3, 4 - 1900
+        // 5, 6 - 2000
+        while (true) {
+            century_gender = r.nextInt(7);
+            if (century_gender > 0) {
+                break;
+            }
+        }
+
         numbCorrect(year);
         numbCorrect(month);
         numbCorrect(day);
+        sb.append(century_gender); // Not need check
     }
 
     // I need this method. Because if will be generated number between 0..9
-    // we getting 3 .. 5 numbers instead of 6. for example: "01 december, 2001" will be "1201"
+    // we may getting 3 .. 5 numbers instead of 6. for example: "01 december, 2001" will be "1201"
     // but we wanted "012001"
     private void numbCorrect(int i) {
         if (i < 10) {
@@ -92,4 +107,40 @@ public class IinGenerator {
             sb.append(i);
         }
     }
+
+    // next step - serialNumber.
+    // xxxxxxxNNNNx
+    // where N is serial number. 4 digit
+    private void generateSerialNumber() {
+        int serialNumber = r.nextInt(10000);
+        sb.append(String.format("%04d", serialNumber));
+    }
+
+    // Step three. Calculating of control number.
+    private void calculateControlNumber() {
+        String s = sb.toString();
+        long control = 0;
+
+        for (int i = 0; i < 11; i++) {
+            control += Integer.parseInt(String.valueOf(s.charAt(i))) * i+1;
+        }
+
+        control %= 11;
+
+        if (control == 10) {
+            int[] k  = {3, 4, 5, 6, 7, 8, 9, 10, 11, 1, 2};
+            control = 0;
+
+            for (int i = 0; i < 11; i++) {
+                control += Integer.parseInt(String.valueOf(s.charAt(i))) * k[i];
+            }
+
+            assert control != 10;
+        }
+
+        sb.append(control);
+
+    }
+
+
 }
