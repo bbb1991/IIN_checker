@@ -2,8 +2,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-// Первый вариант. Решил оставить весь быдлокод для предков.
-// Рефакторинг кода проведен в соседнем файле, ModifiedIinChecker.java
+
 /**
  * 
  * IIN example:
@@ -14,7 +13,7 @@ import java.io.InputStreamReader;
  * 
  */
 
-public class Test {
+public class MedifiedIinChecker {
 
     private String iin;
     private int year;
@@ -24,7 +23,7 @@ public class Test {
 
     public static void main(String[] args)
     {
-        Test hw = new Test();
+        MedifiedIinChecker hw = new MedifiedIinChecker();
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))){
             hw.iin = reader.readLine(); // Getting IIN
