@@ -1,9 +1,10 @@
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Random;
 
 /**
  * Приложение для случайной генераций ИИН.
  * Понадобилось для работы, так как оказывается придумать корректный ИИН куда труднее
- *
  */
 
 
@@ -18,12 +19,12 @@ public class IinGenerator {
 
     public static void main(String[] args) {
 
-        IinGenerator generator = new IinGenerator();
+        IinGenerator g = new IinGenerator();
 
-        generator.generateDate();
-        generator.generateSerialNumber();
-        generator.calculateControlNumber();
-        System.out.println(generator.sb);
+        g.generateDate();
+        g.generateSerialNumber();
+        g.calculateControlNumber();
+        System.out.println(g.sb);
 
 
     }
@@ -34,49 +35,19 @@ public class IinGenerator {
     // IIN
     private void generateDate() {
 
+        GregorianCalendar calendar = new GregorianCalendar();
+        int year = r.nextInt(215) + 1800; // generating year of birth between 1800 .. 2014
 
-        int year, month, day, century_gender;
+        int dayOfYear = r.nextInt(365) + 1;
 
-        // Generate year. Must be between 00 (like 2000 or 1900 or even 1800 why not?!)
-        // and 99 (1999, 1899 ...)
-        year = r.nextInt(99);
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.DAY_OF_YEAR, dayOfYear);
 
-        // Now we generating month. Must be between 01 (January) and 12 (December)
-        while (true) {
-            month = r.nextInt(13);
-            if (month > 0) {
-                break;
-            }
-        }
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        // Ok. Now we need day. But... We have 31 day of month, 30 also 28 and... oh dear, 29
-        boolean isDayCorrect = false;
-        do {
-            day = r.nextInt(32);
-            switch (month) {
-                case 1:
-                case 3:
-                case 5:
-                case 7:
-                case 8:
-                case 10:
-                case 12:
-                    if (day > 0) {
-                        isDayCorrect = true;
-                    }
-                    break;
-                // TODO fix february month. Let me sleep on it
-                case 2:
-                case 4:
-                case 6:
-                case 9:
-                case 11:
-                    if (day > 0 && day < 31) {
-                        isDayCorrect = true;
-                    }
-                    break;
-            }
-        } while (!isDayCorrect);
+        int century_gender = Integer.parseInt(String.valueOf(year).substring(0, 2));
+        year = Integer.parseInt(String.valueOf(year).substring(2));
 
         // Generating gender and century.
         // if RANDOM % 2 == 0 this is woman/girl/grandma/..
@@ -84,11 +55,14 @@ public class IinGenerator {
         // 1, 2 - 1800
         // 3, 4 - 1900
         // 5, 6 - 2000
-        while (true) {
-            century_gender = r.nextInt(7);
-            if (century_gender > 0) {
-                break;
-            }
+
+        // if year generated between 1800 .. 1899
+        if (century_gender == 18) {
+            century_gender = r.nextInt(3) + 1;
+        } else if (century_gender == 19) { // if year between 1900 .. 1999
+            century_gender = r.nextInt(3) + 2;
+        } else { // and 2000 .. 2014
+            century_gender = r.nextInt(3) + 4;
         }
 
         numbCorrect(year);
@@ -121,6 +95,8 @@ public class IinGenerator {
         String s = sb.toString();
         long control = 0;
 
+        System.out.println("1");
+
         for (int i = 0; i < 11; i++) {
             control += Integer.parseInt(String.valueOf(s.charAt(i))) * i+1;
         }
@@ -128,6 +104,7 @@ public class IinGenerator {
         control %= 11;
 
         if (control == 10) {
+            System.out.println("2");
             int[] k  = {3, 4, 5, 6, 7, 8, 9, 10, 11, 1, 2};
             control = 0;
 
@@ -137,10 +114,6 @@ public class IinGenerator {
 
             assert control != 10;
         }
-
         sb.append(control);
-
     }
-
-
 }
